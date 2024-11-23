@@ -20,7 +20,7 @@ import {
 
 const chartConfig = {
   views: {
-    label: "Page Views",
+    label: "Daily Transactions",
   },
   transactionCount: {
     label: "Desktop",

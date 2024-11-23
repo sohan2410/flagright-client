@@ -14,13 +14,20 @@ export type Option = {
   value: string | boolean | number | undefined;
 };
 
+type ComparisonOption = {
+  type: "select";
+  options: Option[];
+};
+
 export type Input = {
+  id?: string;
   type: "input";
   options?: Option[];
   inputType?: string;
   min?: number;
   step?: string;
   placeholder?: string;
+  comparison?: ComparisonOption;
 };
 
 export type Checkbox = {

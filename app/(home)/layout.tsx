@@ -1,37 +1,21 @@
-import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { TopBanner } from "@/components/layout/top-banner";
-import { SocialsFooter } from "@/components/layout/socials-footer";
-import { Link } from "@/components/custom/link";
-import { Toaster } from "@/components/ui/toaster"
-
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <TopBanner />
       <main className="container mx-auto flex min-h-screen flex-col gap-4 p-4 sm:p-16">
       <Toaster />
-        <div className="flex flex-col gap-4 sm:gap-8 w-full max-w-7xl mx-auto relative min-h-full h-full rounded-lg border border-border/50 bg-background/50 p-4 backdrop-blur-[2px] sm:p-8">
+
+        <div className="flex flex-col gap-4 sm:gap-8 w-full max-w-[100rem] mx-auto relative min-h-full h-full rounded-lg border border-border/50 bg-background/50 p-4 backdrop-blur-[2px] sm:p-8">
           <div className="grid gap-1">
             <h1 className="text-3xl font-semibold text-foreground">
-              Data-Table Filters
+              Transaction dashboard
             </h1>
             <h2 className="text-lg text-muted-foreground">
-              Powered by{" "}
-              <Link href="https://tanstack.com/table">tanstack table</Link> and{" "}
-              <Link href="https://ui.shadcn.com">shadcn ui</Link> with controls
-              and <Link href="http://cmdk.paco.me/">cmdk</Link> using search
-              params via <Link href="https://nuqs.47ng.com">nuqs</Link>.
+              <strong>Interactive</strong> transaction <strong>dashboard</strong> with <strong>advanced filters</strong>, <strong>dynamic visualizations</strong>, and <strong>actionable insights</strong> for tracking transaction <strong>trends</strong>, <strong>types</strong>, and <strong>statuses</strong>.
             </h2>
-            <p className="text-muted-foreground">
-              Code available on{" "}
-              <Link href="https://github.com/openstatusHQ/data-table-filters">
-                GitHub
-              </Link>
-              .
-            </p>
           </div>
           <Separator />
           {children}
@@ -39,10 +23,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             variant="outline"
             className="absolute -top-2.5 left-4 bg-background sm:left-8"
           >
-            Work in progress
+            Flagright-dashboard
           </Badge>
         </div>
-        <SocialsFooter />
       </main>
     </>
   );

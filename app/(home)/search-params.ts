@@ -16,6 +16,9 @@ import {
 } from "@/lib/delimiters";
 import { REGIONS } from "@/constants/region";
 import { TAGS } from "@/constants/tag";
+import { CurrencyCode } from "@/types/transaction/CurrencyCode";
+import { TransactionState } from "@/types/transaction/TransactionState";
+import { TransactionType } from "@/types/transaction/TransactionType";
 
 export const parseAsSort = createParser({
   parse(queryValue) {
@@ -29,14 +32,17 @@ export const parseAsSort = createParser({
 });
 
 export const searchParamsParser = {
-  // FILTERS
-  url: parseAsString,
-  p95: parseAsArrayOf(parseAsInteger, SLIDER_DELIMITER),
-  public: parseAsArrayOf(parseAsBoolean, ARRAY_DELIMITER),
-  active: parseAsArrayOf(parseAsBoolean, ARRAY_DELIMITER),
-  regions: parseAsArrayOf(parseAsStringLiteral(REGIONS), ARRAY_DELIMITER),
-  tags: parseAsArrayOf(parseAsStringLiteral(TAGS), ARRAY_DELIMITER),
-  date: parseAsArrayOf(parseAsTimestamp, RANGE_DELIMITER),
+  timestamp: parseAsArrayOf(parseAsTimestamp, RANGE_DELIMITER),
+  originAmountDetails: parseAsString,
+  destinationAmountDetails: parseAsString,
+  currencyCode: parseAsArrayOf(parseAsStringLiteral(Object.values(CurrencyCode)), ARRAY_DELIMITER),
+  type: parseAsArrayOf(parseAsStringLiteral(Object.values(TransactionType)), ARRAY_DELIMITER),
+  transactionState: parseAsArrayOf(parseAsStringLiteral(Object.values(TransactionState)), ARRAY_DELIMITER),
+  originUserId: parseAsString,
+  destinationUserId: parseAsString,
+  transactionId: parseAsString,
+  description: parseAsString,
+  tags: parseAsArrayOf(parseAsString, ARRAY_DELIMITER),
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParamsParser);

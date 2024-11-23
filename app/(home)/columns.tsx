@@ -1,164 +1,404 @@
-"use client";
+import { ColumnDef } from "@tanstack/react-table"
+import { ITransaction } from "@/types/transaction/Transaction"
+import { format } from "date-fns" // You might need to install this package
+import { Badge } from "@/components/ui/badge"
+import { stateColors, tagsColor } from "./constants"
+import { TextWithTooltip } from "@/components/custom/text-with-tooltip"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { UTCDate } from "@date-fns/utc"
+const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-import { Badge } from "@/components/ui/badge";
-import type { ColumnDef } from "@tanstack/react-table";
-import { Check, Minus } from "lucide-react";
-import { tagsColor } from "./constants";
-import type { ColumnSchema } from "./schema";
-import { isArrayOfDates, isArrayOfNumbers } from "@/lib/is-array";
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { format, isSameDay } from "date-fns";
-
-export const columns: ColumnDef<ColumnSchema>[] = [
+export const columns: ColumnDef<ITransaction>[] = [
   {
-    accessorKey: "name",
-    header: "Name",
-    enableHiding: false,
-  },
-  {
-    accessorKey: "url",
-    header: "URL",
+    accessorKey: "type",
+    header: "Type",
     cell: ({ row }) => {
-      const value = row.getValue("url");
-      return <div className="max-w-[200px] truncate">{`${value}`}</div>;
+      const value =row.getValue("type") as string
+      return <div className="flex flex-wrap gap-1"><Badge className={tagsColor[value].badge}>{value}</Badge></div>
+    },
+  },
+  // {
+  //   accessorKey: "transactionId",
+  //   header: "Transaction ID",
+  // },
+  {
+    id: "transactionId",
+    accessorKey: "transactionId",
+    header: "Transaction ID",
+    cell: ({ row }) => {
+      const value = row.getValue("transactionId") as string;
+      return (
+        <TextWithTooltip className="font-mono max-w-[85px]" text={value} />
+      );
+    },
+  },
+  // {
+  //   accessorKey: "timestamp",
+  //   header: "Date",
+  //   cell: ({ row }) => {
+  //     const value = row.getValue("timestamp") as number;
+  //     return (
+  //       <div className="text-xs text-muted-foreground" suppressHydrationWarning>
+  //         {format(value, "LLL dd, y HH:mm")}
+  //       </div>
+  //     );
+  //     // return (
+  //     //   <div className="flex flex-col">
+  //     //     <span>{format(row.getValue("timestamp"), "PP")}</span>
+  //     //     <span className="text-sm text-gray-500">{format(row.getValue("timestamp"), "p")}</span>
+  //     //   </div>
+  //     // )
+  //   },
+  // },
+  {
+    accessorKey: "timestamp",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Date" />
+    ),
+    cell: ({ row }) => {
+      const timestamp = row.getValue("timestamp") as number;
+      const date = new Date(timestamp);
+      return (
+        <HoverCard openDelay={0} closeDelay={0}>
+          <HoverCardTrigger asChild>
+          <div className="text-xs text-muted-foreground" suppressHydrationWarning>
+          {format(date, "LLL dd, y HH:mm")}
+        </div>
+          </HoverCardTrigger>
+          <HoverCardContent
+            side="right"
+            align="start"
+            alignOffset={-4}
+            className="p-2 w-auto z-10"
+          >
+            <dl className="flex flex-col gap-1">
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Timestamp</dt>
+                <dd className="font-mono truncate">{timestamp}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">UTC</dt>
+                <dd className="font-mono truncate">
+                  {format(new UTCDate(date), "LLL dd, y HH:mm:ss")}
+                </dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">{timezone}</dt>
+                <dd className="font-mono truncate">
+                  {format(date, "LLL dd, y HH:mm:ss")}
+                </dd>
+              </div>
+            </dl>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
+    filterFn: "inDateRange",
+    meta: {
+      // headerClassName: "w-[182px]",
     },
   },
   {
-    accessorKey: "regions",
-    header: "Regions",
+    id: "originUserId",
+    accessorKey: "originUserId",
+    header: "Origin User",
     cell: ({ row }) => {
-      const value = row.getValue("regions");
-      if (Array.isArray(value)) {
-        return <div className="text-muted-foreground">{value.join(", ")}</div>;
-      }
-      return <div className="text-muted-foreground">{`${value}`}</div>;
+      const value = row.getValue("originUserId") as string;
+      return (
+        <TextWithTooltip className="font-mono max-w-[85px]" text={value} />
+      );
     },
-    filterFn: (row, id, value) => {
-      const array = row.getValue(id) as string[];
-      if (typeof value === "string") return array.includes(value);
-      // up to the user to define either `.some` or `.every`
-      if (Array.isArray(value)) return value.some((i) => array.includes(i));
-      return false;
+    meta: {
+      label: "originUserId",
+    },
+  },
+  {
+    id: "destinationUserId",
+    accessorKey: "destinationUserId",
+    header: "Destination User",
+    cell: ({ row }) => {
+      const value = row.getValue("destinationUserId") as string;
+      return (
+        <TextWithTooltip className="font-mono max-w-[85px]" text={value} />
+      );
+    },
+    meta: {
+      label: "destinationUserId",
+    },
+  },
+  {
+    accessorKey: "transactionState",
+    header: "Status",
+    cell: ({ row }) => {
+      const value =row.getValue("transactionState") as string
+      return <div className="flex flex-wrap gap-1"><Badge className={stateColors[value].badge}>{value}</Badge></div>
+    },
+    // cell: ({ row }) => {
+    //   const state = row.getValue("transactionState") as string
+    //   return (
+    //     <span className={`
+    //       px-2 py-1 rounded-full text-xs font-medium
+    //       ${state === 'COMPLETED' ? 'bg-green-100 text-green-800' : ''}
+    //       ${state === 'PENDING' ? 'bg-yellow-100 text-yellow-800' : ''}
+    //       ${state === 'FAILED' ? 'bg-red-100 text-red-800' : ''}
+    //     `}>
+    //       {state}
+    //     </span>
+    //   )
+    // },
+  },
+  {
+    accessorKey: "description",
+    header: "Description",
+    cell: ({ row }) => {
+      const value = row.getValue("description") as string;
+      return (
+        <HoverCard openDelay={0} closeDelay={0}>
+          <HoverCardTrigger asChild>
+            <div className="text-xs truncate max-w-[85px]">{value}</div>
+          </HoverCardTrigger>
+          <HoverCardContent
+            side="right"
+            align="start"
+            alignOffset={-4}
+            className="p-2 w-auto z-10"
+          >
+            <div className="text-sm">{value}</div>
+          </HoverCardContent>
+        </HoverCard>
+      );
     },
   },
   {
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      const value = row.getValue("tags") as string | string[];
-      if (Array.isArray(value)) {
-        return (
-          <div className="flex flex-wrap gap-1">
-            {value.map((v) => {
-              console.log('v', v)
-              return <Badge key={v} className={tagsColor[v].badge}>
-              {v}
-            </Badge>
-            })}
-          </div>
-        );
-      }
-      return <Badge className={tagsColor[value].badge}>{value}</Badge>;
-    },
-    filterFn: (row, id, value) => {
-      const array = row.getValue(id) as string[];
-      if (typeof value === "string") return array.includes(value);
-      // up to the user to define either `.some` or `.every`
-      if (Array.isArray(value)) return value.some((i) => array.includes(i));
-      return false;
-    },
-  },
-  {
-    accessorKey: "p95",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="P95" />
-    ),
-    cell: ({ row }) => {
-      const value = row.getValue("p95");
-      if (typeof value === "undefined") {
-        return <Minus className="h-4 w-4 text-muted-foreground/50" />;
-      }
+      // const tags = [
+      //   {key: "test", value: "test"},
+      //   {key: "test", value: "test"},
+      //   {key: "test", value: "test"},
+      //   {key: "test", value: "test"},
+      // ]
+      const tags = row.getValue("tags") as Array<{ key: string; value: string }>;
       return (
-        <div>
-          <span className="font-mono">{`${value}`}</span> ms
+        <div className="flex flex-wrap gap-1">
+          {tags?.map((tag) => {
+            return  <Badge
+            key={tag.key}
+            variant={'outline'}
+          >
+            {tag.value}
+          </Badge>
+          })}
         </div>
       );
     },
-    filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id) as number;
-      if (typeof value === "number") return value === Number(rowValue);
-      if (Array.isArray(value) && isArrayOfNumbers(value)) {
-        if (value.length === 1) {
-          return value[0] === rowValue;
-        } else {
-          const sorted = value.sort((a, b) => a - b);
-          return sorted[0] <= rowValue && rowValue <= sorted[1];
-        }
-      }
-      return false;
-    },
   },
   {
-    accessorKey: "active",
-    header: "Active",
+    accessorKey: "currencyCode",
+    header: "Currency",
     cell: ({ row }) => {
-      const value = row.getValue("active");
-      if (value) return <Check className="h-4 w-4" />;
-      return <Minus className="h-4 w-4 text-muted-foreground/50" />;
-    },
-    filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id);
-      if (typeof value === "string") return value === String(rowValue);
-      if (typeof value === "boolean") return value === rowValue;
-      if (Array.isArray(value)) return value.includes(rowValue);
-      return false;
-    },
-  },
-  {
-    accessorKey: "public",
-    header: "Public",
-    cell: ({ row }) => {
-      const value = row.getValue("public");
-      if (value) return <Check className="h-4 w-4" />;
-      return <Minus className="h-4 w-4 text-muted-foreground/50" />;
-    },
-    filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id);
-      if (typeof value === "string") return value === String(rowValue);
-      if (typeof value === "boolean") return value === rowValue;
-      if (Array.isArray(value)) return value.includes(rowValue);
-      return false;
-    },
-  },
-  {
-    accessorKey: "date",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Date" />
-    ),
-    cell: ({ row }) => {
-      const value = row.getValue("date");
+      // const tags = [
+      //   {key: "test", value: "test"},
+      //   {key: "test", value: "test"},
+      //   {key: "test", value: "test"},
+      //   {key: "test", value: "test"},
+      // ]
+      const details = row.getValue("originAmountDetails") as {
+        transactionAmount: number;
+        transactionCurrency: string;
+      };
       return (
-        <div className="text-xs text-muted-foreground" suppressHydrationWarning>
-          {format(new Date(`${value}`), "LLL dd, y HH:mm")}
+        <div className="flex flex-wrap gap-1">
+           <Badge
+            variant={'outline'}
+          >
+            {details?.transactionCurrency}
+          </Badge>
         </div>
       );
     },
-    filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id);
-      if (value instanceof Date && rowValue instanceof Date) {
-        return isSameDay(value, rowValue);
-      }
-      if (Array.isArray(value)) {
-        if (isArrayOfDates(value) && rowValue instanceof Date) {
-          const sorted = value.sort((a, b) => a.getTime() - b.getTime());
-          // TODO: check length
-          return (
-            sorted[0]?.getTime() <= rowValue.getTime() &&
-            rowValue.getTime() <= sorted[1]?.getTime()
-          );
-        }
-      }
-      return false;
+  },
+
+  {
+    accessorKey: "originAmountDetails",
+    header: "Amount Sent",
+    id: "originAmountDetails",
+    cell: ({ row }) => {
+      const details = row.getValue("originAmountDetails") as {
+        transactionAmount: number;
+        transactionCurrency: string;
+      };
+      if (!details) return "N/A";
+      
+      return (
+        <span>
+          {details.transactionAmount.toFixed(2)} {details.transactionCurrency}
+        </span>
+      );
     },
   },
-];
+  {
+    accessorKey: "destinationAmountDetails",
+    header: "Amount Received",
+    id: "destinationAmountDetails",
+    cell: ({ row }) => {
+      const details = row.getValue("destinationAmountDetails") as {
+        transactionAmount: number;
+        transactionCurrency: string;
+      };
+      if (!details) return "N/A";
+      
+      return (
+        <span>
+          {details.transactionAmount.toFixed(2)} {details.transactionCurrency}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "originDeviceData",
+    header: "Origin Device",
+    cell: ({ row }) => {
+      const device = row.getValue("originDeviceData") as {
+        batteryLevel: number;
+        deviceLatitude: number;
+        deviceLongitude: number;
+        ipAddress: string;
+        deviceIdentifier: string;
+        vpnUsed: boolean;
+        operatingSystem: string;
+        deviceMaker: string;
+        deviceModel: string;
+        deviceYear: string;
+        appVersion: string;
+      };
+      
+      if (!device) return "N/A";
+
+      return (
+        <HoverCard openDelay={0} closeDelay={0}>
+          <HoverCardTrigger asChild>
+            <div className="text-xs truncate max-w-[85px]">
+              {device.deviceMaker} {device.deviceModel}
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent
+            side="right"
+            align="start"
+            alignOffset={-4}
+            className="p-2 w-auto z-10"
+          >
+            <dl className="flex flex-col gap-1">
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Device</dt>
+                <dd className="font-mono truncate">{device.deviceMaker} {device.deviceModel} ({device.deviceYear})</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">OS</dt>
+                <dd className="font-mono truncate">{device.operatingSystem}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Battery</dt>
+                <dd className="font-mono truncate">{device.batteryLevel}%</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Location</dt>
+                <dd className="font-mono truncate">{device.deviceLatitude}, {device.deviceLongitude}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">IP Address</dt>
+                <dd className="font-mono truncate">{device.ipAddress}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">VPN</dt>
+                <dd className="font-mono truncate">{device.vpnUsed ? "Yes" : "No"}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">App Version</dt>
+                <dd className="font-mono truncate">{device.appVersion}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Device ID</dt>
+                <dd className="font-mono truncate">{device.deviceIdentifier}</dd>
+              </div>
+            </dl>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
+  },
+  {
+    accessorKey: "destinationDeviceData",
+    header: "Destination Device",
+    cell: ({ row }) => {
+      const device = row.getValue("destinationDeviceData") as {
+        batteryLevel: number;
+        deviceLatitude: number;
+        deviceLongitude: number;
+        ipAddress: string;
+        deviceIdentifier: string;
+        vpnUsed: boolean;
+        operatingSystem: string;
+        deviceMaker: string;
+        deviceModel: string;
+        deviceYear: string;
+        appVersion: string;
+      };
+      
+      if (!device) return "N/A";
+
+      return (
+        <HoverCard openDelay={0} closeDelay={0}>
+          <HoverCardTrigger asChild>
+            <div className="text-xs truncate max-w-[85px]">
+              {device.deviceMaker} {device.deviceModel}
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent
+            side="right"
+            align="start"
+            alignOffset={-4}
+            className="p-2 w-auto z-10"
+          >
+            <dl className="flex flex-col gap-1">
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Device</dt>
+                <dd className="font-mono truncate">{device.deviceMaker} {device.deviceModel} ({device.deviceYear})</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">OS</dt>
+                <dd className="font-mono truncate">{device.operatingSystem}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Battery</dt>
+                <dd className="font-mono truncate">{device.batteryLevel}%</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Location</dt>
+                <dd className="font-mono truncate">{device.deviceLatitude}, {device.deviceLongitude}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">IP Address</dt>
+                <dd className="font-mono truncate">{device.ipAddress}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">VPN</dt>
+                <dd className="font-mono truncate">{device.vpnUsed ? "Yes" : "No"}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">App Version</dt>
+                <dd className="font-mono truncate">{device.appVersion}</dd>
+              </div>
+              <div className="flex gap-4 text-sm justify-between items-center">
+                <dt className="text-muted-foreground">Device ID</dt>
+                <dd className="font-mono truncate">{device.deviceIdentifier}</dd>
+              </div>
+            </dl>
+          </HoverCardContent>
+        </HoverCard>
+      );
+    },
+  },
+]
