@@ -51,7 +51,6 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
   const search = searchParams
 
   useEffect(() => {
-    console.log('useEffect', pagination, columnFilters, sorting)
     fetchData()
   }, [pagination, columnFilters, sorting])
 
@@ -64,7 +63,6 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
         ...convertFiltersToParams(columnFilters),
         ...convertSortingToParams(sorting),
       }
-      console.log('queryParams', queryParams)
 
       const { data: result } = await axios.get<ApiResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`,

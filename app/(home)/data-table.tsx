@@ -113,9 +113,6 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
     },
   })
 
-  React.useEffect(() => {
-    console.log('columnFilters', columnFilters)
-  }, [columnFilters])
 
   React.useEffect(() => {
     const columnFiltersWithNullable = filterFields.map((field) => {
@@ -128,8 +125,6 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
       prev[curr.id as string] = curr.value
       return prev
     }, {} as Record<string, unknown>)
-
-    console.log({ search })
 
     setSearch(search)
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -42,7 +42,7 @@ export const searchParamsParser = {
   destinationUserId: parseAsString,
   transactionId: parseAsString,
   description: parseAsString,
-  tags: parseAsArrayOf(parseAsString, ARRAY_DELIMITER),
+  tags: parseAsString,
 };
 
 export const searchParamsCache = createSearchParamsCache(searchParamsParser);
