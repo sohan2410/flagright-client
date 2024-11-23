@@ -5,7 +5,6 @@ import { Skeleton } from './skeleton'
 import { columns } from './columns'
 import { filterFields } from './constants'
 import { DataTable } from './data-table'
-import { useToast } from '@/hooks/use-toast'
 import AreaChart from '@/components/charts/area-chart'
 import LineChartComponent from '@/components/charts/line-chart'
 import PieChartComponent from '@/components/charts/pie-chart'
@@ -29,7 +28,6 @@ interface ApiResponse {
 }
 
 export default function TransactionsPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
-  const { toast } = useToast()
   const [data, setData] = useState<ITransaction[]>([])
   const [metadata, setMetadata] = useState<ApiResponse['data']['metadata']>({
     totalDocs: 0,

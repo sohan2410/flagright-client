@@ -5,6 +5,7 @@ import '@/styles/globals.css'
 import { ThemeProvider } from '@/components/theme/theme-provider'
 import PlausibleProvider from 'next-plausible'
 import { ReactQueryProvider } from '@/providers/react-query'
+import { Toaster } from 'sonner'
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -38,6 +39,7 @@ export default function RootLayout({
       <PlausibleProvider domain="https://flagright.api.sohanbandary.com">
         <ReactQueryProvider>
           <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
+            <Toaster richColors/>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               {children}
             </ThemeProvider>

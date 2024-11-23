@@ -9,7 +9,6 @@ import type { DataTableFilterField } from '@/components/data-table/types'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { useLocalStorage } from '@/hooks/use-local-storage'
-import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 import type { ColumnDef, ColumnFiltersState, PaginationState, SortingState, Table as TTable, VisibilityState } from '@tanstack/react-table'
 import { flexRender, getCoreRowModel, getFacetedRowModel, getFacetedUniqueValues, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
@@ -18,6 +17,7 @@ import * as React from 'react'
 import { columnFilterSchema } from './schema'
 import { searchParamsParser } from './search-params'
 import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
 
 interface Metadata {
   totalDocs: number
@@ -72,7 +72,6 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
   const [_, setSearch] = useQueryStates(searchParamsParser)
   const [isCronLoading, setIsCronLoading] = React.useState(false)
   const [cronStatus, setCronStatus] = React.useState(false)
-  const { toast } = useToast()
   const [isGeneratingReport, setIsGeneratingReport] = React.useState(false)
   const [isDownloadingCSV, setIsDownloadingCSV] = React.useState(false)
 
@@ -170,7 +169,9 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
       setIsGeneratingReport(true)
       const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/get`, { method: 'GET' })
       const { success, message } = await response.json()
-      if (success) toast({ title: 'Report generated', description: message })
+      if(success) toast.message('Report Generated', {
+        description: message,
+      })
     } catch (error) {
       console.error('Failed to generate report:', error)
     } finally {
@@ -184,7 +185,9 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
       .then((res) => res.json())
       .then(({ success, message, data }) => {
         if (success) {
-          toast({ title: 'Cron Job', description: message })
+          toast.message('Cron Job', {
+            description: message,
+          })
           setCronStatus(data.status)
         }
       })
