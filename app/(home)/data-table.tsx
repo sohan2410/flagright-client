@@ -18,6 +18,7 @@ import { columnFilterSchema } from './schema'
 import { searchParamsParser } from './search-params'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import axios from 'axios'
 
 interface Metadata {
   totalDocs: number
@@ -135,17 +136,24 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
   }, [columnFilters])
 
   React.useEffect(() => {
-    try {
-      setIsCronLoading(true)
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/cron/status`, { method: 'GET' })
-        .then((res) => res.json())
-        .then(({ success, message, data }) => {
-          if (success) {
-            setCronStatus(data.status)
-          }
-        })
-        .finally(() => setIsCronLoading(false))
-    } catch (error) {}
+    const fetchCronStatus = async () => {
+      try {
+        setIsCronLoading(true)
+        const { data: { success, message, data } } = await axios.get(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/cron/status`,
+          { withCredentials: true }
+        )
+        if (success) {
+          setCronStatus(data.status)
+        }
+      } catch (error) {
+        console.error('Error fetching cron status:', error)
+      } finally {
+        setIsCronLoading(false)
+      }
+    }
+
+    fetchCronStatus()
   }, [])
   const downloadCSV = async () => {
     try {
@@ -157,7 +165,9 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
       a.href = url
       a.download = 'transactions.csv'
       a.click()
+      toast.success('CSV Downloaded')
     } catch (error) {
+      toast.error('Failed to download CSV')
       console.error('Failed to download CSV:', error)
     } finally {
       setIsDownloadingCSV(false)
@@ -167,12 +177,13 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
   const generateReport = async () => {
     try {
       setIsGeneratingReport(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/get`, { method: 'GET' })
-      const { success, message } = await response.json()
-      if(success) toast.message('Report Generated', {
-        description: message,
-      })
+      const { data: { success, message } } = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/get`,
+        { withCredentials: true }
+      )
+      if (success) toast.success(message)
     } catch (error) {
+      toast.error('Failed to generate report')
       console.error('Failed to generate report:', error)
     } finally {
       setIsGeneratingReport(false)
@@ -181,17 +192,22 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
 
   const toggleCronJob = async () => {
     setIsCronLoading(true)
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/cron/toggle`, { method: 'POST' })
-      .then((res) => res.json())
-      .then(({ success, message, data }) => {
-        if (success) {
-          toast.message('Cron Job', {
-            description: message,
-          })
-          setCronStatus(data.status)
-        }
-      })
-      .finally(() => setIsCronLoading(false))
+    try {
+      const { data: { success, message, data } } = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/cron/toggle`,
+        {},
+        { withCredentials: true }
+      )
+      if (success) {
+        toast.success(message)
+        setCronStatus(data.status)
+      }
+    } catch (error) {
+      toast.error('Failed to toggle cron job')
+      console.error('Error toggling cron job:', error)
+    } finally {
+      setIsCronLoading(false)
+    }
   }
 
   return (
@@ -234,8 +250,8 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell 
-                        key={cell.id} 
+                      <TableCell
+                        key={cell.id}
                         onClick={() => {
                           const value = cell.getValue();
                           if (value !== null && value !== undefined) {

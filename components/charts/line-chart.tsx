@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import axios from "axios"
 
 
 const chartConfig = {
@@ -29,15 +30,19 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function LineChartComponent() {
- 
-    const [chartData, setChartData]=React.useState([])
+
+  const [chartData, setChartData] = React.useState([])
 
   React.useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/number-of-transactions`)
-        .then(res => res.json())
-        .then(({success, message, data}) => {
-          setChartData(data?.report)
-        })
+    axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/number-of-transactions`, {
+      withCredentials: true
+    })
+      .then(({ data: { success, message, data } }) => {
+        setChartData(data?.report)
+      })
+      .catch(error => {
+        console.error('Error fetching chart data:', error)
+      })
   }, [])
 
   return (

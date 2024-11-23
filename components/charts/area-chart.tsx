@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import axios from "axios"
 
 
 const chartConfig = {
@@ -48,9 +49,10 @@ export default function AreaChartComponent() {
 
   React.useEffect(() => {
     setIsLoading(true)
-    fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/amounts`)
-      .then(res => res.json())
-      .then(({success, message, data}) => {
+    axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/amounts`, {
+      withCredentials: true
+    })
+      .then(({ data: { success, message, data } }) => {
         setChartData(data?.report || [])
         setIsLoading(false)
       })

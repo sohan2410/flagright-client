@@ -10,6 +10,7 @@ import LineChartComponent from '@/components/charts/line-chart'
 import PieChartComponent from '@/components/charts/pie-chart'
 import type { PaginationState, ColumnFiltersState, SortingState } from '@tanstack/react-table'
 import { ITransaction } from '@/types/transaction/Transaction'
+import axios from 'axios'
 
 interface ApiResponse {
   data: {
@@ -64,11 +65,14 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
         ...convertSortingToParams(sorting),
       }
       console.log('queryParams', queryParams)
-      const params = new URLSearchParams(queryParams as Record<string, string>)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction?${params}`, { method: 'GET' })
-      const result: ApiResponse = await response.json()
-      console.log('result', result)
+      const { data: result } = await axios.get<ApiResponse>(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`,
+        {
+          params: queryParams,
+          withCredentials: true
+        }
+      )
       setData(result.data.transaction)
       setMetadata(result.data.metadata)
     } catch (error) {
