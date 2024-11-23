@@ -106,7 +106,7 @@ export default function RegisterForm() {
             {isLoading ? 'Creating account...' : 'Create account'}
           </Button>
 
-          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/login`}>
+          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/login?fallbackUrl=${process.env.NEXT_PUBLIC_APP_URL}`}>
             <Button variant="outline" className="w-full" disabled={isLoading}>
               Register with Google
             </Button>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { Button } from '../ui/button'
+import { toast } from 'sonner'
 export interface IUser {
     id: string
     firstName: string
@@ -42,12 +43,12 @@ export function UserMenu() {
     const handleLogout = async () => {
         try {
             const {
-                data: { success },
+                data: { success, message },
             } = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/logout`, {
                 withCredentials: true,
             })
             if (success) {
-                console.log('logout success')
+                toast.success(message)
                 router.push('/login')
             }
         } catch (error) {

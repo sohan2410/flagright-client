@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import axios from "axios"
 
 import {
   Card,
@@ -25,8 +26,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import axios from "axios"
 
+type TimeRangeUnit = 'days' | 'months' | 'year'
+
+interface TimeRangeOption {
+  amount: number
+  unit: TimeRangeUnit
+  placeholder: string
+}
+
+const timeRanges: TimeRangeOption[] = [
+  { amount: 3, unit: 'months', placeholder: 'Last 3 months' },
+  { amount: 30, unit: 'days', placeholder: 'Last 30 days' },
+  { amount: 7, unit: 'days', placeholder: 'Last 7 days' },
+  { amount: 1, unit: 'year', placeholder: 'Last 1 year' },
+]
 
 const chartConfig = {
   visitors: {
@@ -43,24 +57,36 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function AreaChartComponent() {
-  const [timeRange, setTimeRange] = React.useState("90d")
+  const [selectedTimeRange, setSelectedTimeRange] = React.useState<TimeRangeOption>(timeRanges[0])
   const [chartData, setChartData] = React.useState([])
   const [isLoading, setIsLoading] = React.useState(true)
 
-  React.useEffect(() => {
+  const fetchChartData = React.useCallback(async (timeRange: TimeRangeOption) => {
     setIsLoading(true)
-    axios.get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/amounts`, {
-      withCredentials: true
-    })
-      .then(({ data: { success, message, data } }) => {
-        setChartData(data?.report || [])
-        setIsLoading(false)
-      })
-      .catch(error => {
-        console.error('Error fetching chart data:', error)
-        setIsLoading(false)
-      })
+    try {
+      const { data: { success, message, data } } = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/report/amounts?amount=${timeRange.amount}&unit=${timeRange.unit}`,
+        { withCredentials: true }
+      )
+      setChartData(data?.report || [])
+    } catch (error) {
+      console.error('Error fetching chart data:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
+
+  React.useEffect(() => {
+    fetchChartData(selectedTimeRange)
+  }, [fetchChartData, selectedTimeRange])
+
+  const handleTimeRangeChange = (value: string) => {
+    const timeRange = timeRanges.find(range => `${range.amount}-${range.unit}` === value)
+    if (timeRange) {
+      setSelectedTimeRange(timeRange)
+      fetchChartData(timeRange)
+    }
+  }
 
   return (
     <Card>
@@ -71,23 +97,27 @@ export default function AreaChartComponent() {
             Amount Sent and Received
           </CardDescription>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
+        <Select
+          value={`${selectedTimeRange.amount}-${selectedTimeRange.unit}`}
+          onValueChange={handleTimeRangeChange}
+        >
           <SelectTrigger
             className="w-[160px] rounded-lg sm:ml-auto"
-            aria-label="Select a value"
+            aria-label="Select time range"
+            disabled={isLoading}
           >
-            <SelectValue placeholder="Last 3 months" />
+            <SelectValue placeholder={selectedTimeRange.placeholder} />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
-            <SelectItem value="90d" className="rounded-lg">
-              Last 3 months
-            </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
-              Last 30 days
-            </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
-              Last 7 days
-            </SelectItem>
+            {timeRanges.map((range) => (
+              <SelectItem
+                key={`${range.amount}-${range.unit}`}
+                value={`${range.amount}-${range.unit}`}
+                className="rounded-lg"
+              >
+                {range.placeholder}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </CardHeader>
@@ -144,6 +174,7 @@ export default function AreaChartComponent() {
                   return date.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
+                    year: "numeric",
                   })
                 }}
               />
@@ -155,6 +186,7 @@ export default function AreaChartComponent() {
                       return new Date(value).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
+                        year: "numeric",
                       })
                     }}
                     indicator="dot"

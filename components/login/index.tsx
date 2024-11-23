@@ -47,9 +47,6 @@ export default function LoginForm() {
       }
     },
   })
-  const handleGoogleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/login?fallbackUrl=${process.env.NEXT_PUBLIC_APP_URL}`
-  }
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -76,9 +73,11 @@ export default function LoginForm() {
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading ? 'Logging in...' : 'Login'}
           </Button>
-          <Button variant="outline" className="w-full" disabled={isLoading} onClick={handleGoogleLogin}>
-            Login with Google
-          </Button>
+          <Link href={`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/google/login?fallbackUrl=${process.env.NEXT_PUBLIC_APP_URL}`}>
+            <Button variant="outline" className="w-full" disabled={isLoading}>
+              Login with Google
+            </Button>
+          </Link>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{' '}
             <Link href="/register" className="underline">
