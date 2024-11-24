@@ -63,10 +63,11 @@ export interface DataTableProps<TData, TValue> {
   setPagination: (pagination: PaginationState) => void
   columnFilters: ColumnFiltersState
   setColumnFilters: (filters: ColumnFiltersState) => void
+  sorting: SortingState
+  setSorting: (sorting: SortingState) => void
 }
 
-export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = false, defaultColumnFilters = [], filterFields = [], onPaginationChange, onFilterChange, onSortingChange, pagination, setPagination, columnFilters, setColumnFilters }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = false, defaultColumnFilters = [], filterFields = [], onPaginationChange, onFilterChange, onSortingChange, pagination, setPagination, columnFilters, setColumnFilters, sorting, setSorting }: DataTableProps<TData, TValue>) {
 
   const [columnVisibility, setColumnVisibility] = useLocalStorage<VisibilityState>('data-table-visibility', {})
   const [controlsOpen, setControlsOpen] = useLocalStorage('data-table-controls', true)
@@ -88,7 +89,9 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
     onColumnFiltersChange: (updaterOrValue) => {
       setColumnFilters(typeof updaterOrValue === 'function' ? updaterOrValue(columnFilters) : updaterOrValue)
     },
-    onSortingChange: setSorting,
+    onSortingChange: (updaterOrValue) => {
+      setSorting(typeof updaterOrValue === 'function' ? updaterOrValue(sorting) : updaterOrValue)
+    },
     onPaginationChange: (updaterOrValue) => {
       setPagination(typeof updaterOrValue === 'function' ? updaterOrValue(pagination) : updaterOrValue)
     },

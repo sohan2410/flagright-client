@@ -63,7 +63,7 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
         ...convertFiltersToParams(columnFilters),
         ...convertSortingToParams(sorting),
       }
-
+      console.log(queryParams, 'queryParams')
       const { data: result } = await axios.get<ApiResponse>(
         `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`,
         {
@@ -105,11 +105,8 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
           // Reset to first page when filters change
           setPagination((prev) => ({ ...prev, pageIndex: 0 }))
         }}
-        onSortingChange={(newSorting) => {
-          setSorting(newSorting)
-          // Reset to first page when sorting changes
-          setPagination((prev) => ({ ...prev, pageIndex: 0 }))
-        }}
+        sorting={sorting}
+        setSorting={setSorting}
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
       />
@@ -132,9 +129,19 @@ function convertFiltersToParams(filters: ColumnFiltersState) {
 }
 
 function convertSortingToParams(sorting: SortingState) {
+  console.log('sorting', sorting)
   if (!sorting.length) return {}
+
+  // Map the column ID to the actual field name if needed
+  const sortFieldMap: Record<string, string> = {
+    originAmountDetails: 'originAmount',
+    destinationAmountDetails: 'destinationAmount',
+    // Add other field mappings as needed
+  }
+
+  const sortField = sortFieldMap[sorting[0].id] || sorting[0].id
   return {
-    sort: sorting[0].id,
-    order: sorting[0].desc ? 'desc' : 'asc',
+    sortBy: sortField,
+    sortOrder: sorting[0].desc ? 'desc' : 'asc',
   }
 }

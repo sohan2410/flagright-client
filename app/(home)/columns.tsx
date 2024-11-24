@@ -14,7 +14,7 @@ export const columns: ColumnDef<ITransaction>[] = [
     accessorKey: "type",
     header: "Type",
     cell: ({ row }) => {
-      const value =row.getValue("type") as string
+      const value = row.getValue("type") as string
       return <div className="flex flex-wrap gap-1"><Badge className={tagsColor[value].badge}>{value}</Badge></div>
     },
   },
@@ -56,15 +56,16 @@ export const columns: ColumnDef<ITransaction>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Date" />
     ),
+    enableSorting: true,
     cell: ({ row }) => {
       const timestamp = row.getValue("timestamp") as number;
       const date = new Date(timestamp);
       return (
         <HoverCard openDelay={0} closeDelay={0}>
           <HoverCardTrigger asChild>
-          <div className="text-xs text-muted-foreground" suppressHydrationWarning>
-          {format(date, "LLL dd, y HH:mm")}
-        </div>
+            <div className="text-xs text-muted-foreground" suppressHydrationWarning>
+              {format(date, "LLL dd, y HH:mm")}
+            </div>
           </HoverCardTrigger>
           <HoverCardContent
             side="right"
@@ -131,7 +132,7 @@ export const columns: ColumnDef<ITransaction>[] = [
     accessorKey: "transactionState",
     header: "Status",
     cell: ({ row }) => {
-      const value =row.getValue("transactionState") as string
+      const value = row.getValue("transactionState") as string
       return <div className="flex flex-wrap gap-1"><Badge className={stateColors[value].badge}>{value}</Badge></div>
     },
     // cell: ({ row }) => {
@@ -184,12 +185,12 @@ export const columns: ColumnDef<ITransaction>[] = [
       return (
         <div className="flex flex-wrap gap-1">
           {tags?.map((tag) => {
-            return  <Badge
-            key={tag.key}
-            variant={'outline'}
-          >
-            {tag.value}
-          </Badge>
+            return <Badge
+              key={tag.key}
+              variant={'outline'}
+            >
+              {tag.value}
+            </Badge>
           })}
         </div>
       );
@@ -211,7 +212,7 @@ export const columns: ColumnDef<ITransaction>[] = [
       };
       return (
         <div className="flex flex-wrap gap-1">
-           <Badge
+          <Badge
             variant={'outline'}
           >
             {details?.transactionCurrency}
@@ -223,7 +224,10 @@ export const columns: ColumnDef<ITransaction>[] = [
 
   {
     accessorKey: "originAmountDetails",
-    header: "Amount Sent",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Amount Sent" />
+    ),
+    enableSorting: true,
     id: "originAmountDetails",
     cell: ({ row }) => {
       const details = row.getValue("originAmountDetails") as {
@@ -231,7 +235,7 @@ export const columns: ColumnDef<ITransaction>[] = [
         transactionCurrency: string;
       };
       if (!details) return "N/A";
-      
+
       return (
         <span>
           {details.transactionAmount.toFixed(2)} {details.transactionCurrency}
@@ -241,7 +245,10 @@ export const columns: ColumnDef<ITransaction>[] = [
   },
   {
     accessorKey: "destinationAmountDetails",
-    header: "Amount Received",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Amount Received" />
+    ),
+    enableSorting: true,
     id: "destinationAmountDetails",
     cell: ({ row }) => {
       const details = row.getValue("destinationAmountDetails") as {
@@ -249,7 +256,7 @@ export const columns: ColumnDef<ITransaction>[] = [
         transactionCurrency: string;
       };
       if (!details) return "N/A";
-      
+
       return (
         <span>
           {details.transactionAmount.toFixed(2)} {details.transactionCurrency}
@@ -274,7 +281,7 @@ export const columns: ColumnDef<ITransaction>[] = [
         deviceYear: string;
         appVersion: string;
       };
-      
+
       if (!device) return "N/A";
 
       return (
@@ -346,7 +353,7 @@ export const columns: ColumnDef<ITransaction>[] = [
         deviceYear: string;
         appVersion: string;
       };
-      
+
       if (!device) return "N/A";
 
       return (
