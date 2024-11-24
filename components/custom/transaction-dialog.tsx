@@ -126,9 +126,9 @@ export function TransactionDialog({ onSuccess }: { onSuccess?: () => void }) {
             <DialogTrigger asChild>
                 <Button variant="outline">Create Transaction</Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle>Create New Transaction</DialogTitle>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader className="top-0 bg-background z-10 pb-4">
+                    <DialogTitle className="mb-4">Create New Transaction</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={formik.handleSubmit} className="grid gap-6">
                     <div className="grid gap-4">
