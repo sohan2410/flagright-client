@@ -175,24 +175,34 @@ export const columns: ColumnDef<ITransaction>[] = [
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      // const tags = [
-      //   {key: "test", value: "test"},
-      //   {key: "test", value: "test"},
-      //   {key: "test", value: "test"},
-      //   {key: "test", value: "test"},
-      // ]
       const tags = row.getValue("tags") as Array<{ key: string; value: string }>;
+      if (!tags?.length) return null;
+
       return (
-        <div className="flex flex-wrap gap-1">
-          {tags?.map((tag) => {
-            return <Badge
-              key={tag.key}
-              variant={'outline'}
-            >
-              {tag.value}
-            </Badge>
-          })}
-        </div>
+        <HoverCard openDelay={0} closeDelay={0}>
+          <HoverCardTrigger asChild>
+            <div className="flex flex-wrap gap-1">
+              <Badge variant="outline">{tags[0].value}</Badge>
+              {tags.length > 1 && (
+                <Badge variant="outline">+{tags.length - 1}</Badge>
+              )}
+            </div>
+          </HoverCardTrigger>
+          <HoverCardContent
+            side="right"
+            align="start"
+            alignOffset={-4}
+            className="p-2 w-auto z-10"
+          >
+            <div className="flex flex-wrap gap-1">
+              {tags.map((tag) => (
+                <Badge key={tag.key} variant="outline">
+                  {tag.value}
+                </Badge>
+              ))}
+            </div>
+          </HoverCardContent>
+        </HoverCard>
       );
     },
   },

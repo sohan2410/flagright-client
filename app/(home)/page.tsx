@@ -51,7 +51,11 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
   const search = searchParams
 
   useEffect(() => {
-    fetchData()
+    const debounceTimeout = setTimeout(() => {
+      fetchData()
+    }, 300)
+
+    return () => clearTimeout(debounceTimeout)
   }, [pagination, columnFilters, sorting])
 
   const fetchData = async () => {
@@ -109,6 +113,7 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
         setSorting={setSorting}
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilters}
+        fetchData={fetchData}
       />
       <AreaChart />
       <LineChartComponent />

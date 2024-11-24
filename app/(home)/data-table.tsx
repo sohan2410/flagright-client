@@ -19,7 +19,7 @@ import { searchParamsParser } from './search-params'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import axios from 'axios'
-
+import { TransactionDialog } from '@/components/custom/transaction-dialog'
 interface Metadata {
   totalDocs: number
   limit: number
@@ -65,9 +65,10 @@ export interface DataTableProps<TData, TValue> {
   setColumnFilters: (filters: ColumnFiltersState) => void
   sorting: SortingState
   setSorting: (sorting: SortingState) => void
+  fetchData: () => void
 }
 
-export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = false, defaultColumnFilters = [], filterFields = [], onPaginationChange, onFilterChange, onSortingChange, pagination, setPagination, columnFilters, setColumnFilters, sorting, setSorting }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = false, defaultColumnFilters = [], filterFields = [], onPaginationChange, onFilterChange, onSortingChange, pagination, setPagination, columnFilters, setColumnFilters, sorting, setSorting, fetchData }: DataTableProps<TData, TValue>) {
 
   const [columnVisibility, setColumnVisibility] = useLocalStorage<VisibilityState>('data-table-visibility', {})
   const [controlsOpen, setControlsOpen] = useLocalStorage('data-table-controls', true)
@@ -208,6 +209,10 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
     }
   }
 
+  const refreshData = () => {
+    fetchData()
+  }
+
   return (
     <div className="flex w-full h-full flex-col gap-3 sm:flex-row">
       <div className={cn('w-full p-1 sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64', !controlsOpen && 'hidden')}>
@@ -226,6 +231,8 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
             <Button variant="outline" onClick={downloadCSV} disabled={isDownloadingCSV}>
               {isDownloadingCSV ? "Downloading..." : "Download CSV"}
             </Button>
+            {/* <TransactionDialog /> */}
+            <TransactionDialog onSuccess={refreshData} />
           </div>
           <div className="flex items-center gap-2 mr-4">
             <Switch id="cron-job" disabled={isCronLoading} checked={cronStatus} onClick={toggleCronJob} />
