@@ -2,6 +2,14 @@
 
 A modern, full-stack transaction management system built with Next.js, featuring real-time data visualization, advanced filtering, and comprehensive transaction tracking.
 
+Frontend deployed Link: [https://app.flagright.sohanbandary.com](https://app.flagright.sohanbandary.com/)
+
+Backend deployed Link: [https://flagright.api.sohanbandary.com/](https://flagright.api.sohanbandary.com/)
+
+Postman Collection Link: [https://github.com/sohan2410/flagright-server/blob/main/public/flagright.postman_collection.json](https://github.com/sohan2410/flagright-server/blob/main/public/flagright.postman_collection.json)
+
+Backend Repository Link: [https://github.com/sohan2410/flagright-server](https://github.com/sohan2410/flagright-server)
+
 ## Features
 
 ### Core Functionality
