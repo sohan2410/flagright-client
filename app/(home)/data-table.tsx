@@ -157,7 +157,10 @@ export function DataTable<TData, TValue>({ columns, data, metadata, isLoading = 
   const downloadCSV = async () => {
     try {
       setIsDownloadingCSV(true)
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/download-csv`, { method: 'POST' })
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction/download-csv`, {
+        method: 'POST',
+        credentials: 'include'
+      })
       const blob = await response.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
