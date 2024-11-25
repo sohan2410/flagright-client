@@ -67,14 +67,10 @@ export default function TransactionsPage({ searchParams }: { searchParams: { [ke
         ...convertFiltersToParams(columnFilters),
         ...convertSortingToParams(sorting),
       }
-      console.log(queryParams, 'queryParams')
-      const { data: result } = await axios.get<ApiResponse>(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`,
-        {
-          params: queryParams,
-          withCredentials: true
-        }
-      )
+      const { data: result } = await axios.get<ApiResponse>(`${process.env.NEXT_PUBLIC_BASE_URL}/api/transaction`, {
+        params: queryParams,
+        withCredentials: true,
+      })
       setData(result.data.transaction)
       setMetadata(result.data.metadata)
     } catch (error) {
@@ -134,7 +130,6 @@ function convertFiltersToParams(filters: ColumnFiltersState) {
 }
 
 function convertSortingToParams(sorting: SortingState) {
-  console.log('sorting', sorting)
   if (!sorting.length) return {}
 
   // Map the column ID to the actual field name if needed

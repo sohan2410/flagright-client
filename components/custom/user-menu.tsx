@@ -48,6 +48,7 @@ export function UserMenu() {
                 withCredentials: true,
             })
             if (success) {
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
                 toast.success(message)
                 router.push('/login')
             }
