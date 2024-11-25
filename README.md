@@ -42,3 +42,10 @@ A modern, full-stack transaction management system built with Next.js, featuring
 - Cookie-based Authentication
 - Real-time Data Updates
 - CSV Export Functionality
+
+### Screenshots
+
+![Table](https://github.com/sohan2410/flagright-client/blob/main/public/images/screenshot-01.png)
+![Amount Sent & Received](https://github.com/sohan2410/flagright-client/blob/main/public/images/screenshot-02.png)
+![Daily Transactions](https://github.com/sohan2410/flagright-client/blob/main/public/images/screenshot-03.png)
+![Transaction Types](https://github.com/sohan2410/flagright-client/blob/main/public/images/screenshot-04.png)
